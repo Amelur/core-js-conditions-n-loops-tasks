@@ -352,39 +352,26 @@ function getSpiralMatrix(size) {
  *  ]                 ]
  */
 function rotateMatrix(matrix) {
-  const numRows = matrix.length;
-  const numCols = matrix[0].length;
+  const matrix1 = matrix;
+  const n = matrix1.length;
 
-  const transposedMatrix = [];
-  for (let i = 0; i < numCols; i += 1) {
-    transposedMatrix.push([]);
-    for (let j = 0; j < numRows; j += 1) {
-      transposedMatrix[i].push(0);
+  for (let i = 0; i < n; i += 1) {
+    for (let j = i; j < n; j += 1) {
+      const temp = matrix1[i][j];
+      matrix1[i][j] = matrix1[j][i];
+      matrix1[j][i] = temp;
     }
   }
 
-  for (let i = 0; i < numRows; i += 1) {
-    for (let j = 0; j < numCols; j += 1) {
-      transposedMatrix[j][i] = matrix[i][j];
+  for (let i = 0; i < n; i += 1) {
+    for (let j = 0; j < n / 2; j += 1) {
+      const temp = matrix1[i][j];
+      matrix1[i][j] = matrix1[i][n - 1 - j];
+      matrix1[i][n - 1 - j] = temp;
     }
   }
 
-  function reverseColumns(matrix1) {
-    const numRows1 = matrix1.length;
-    const numCols1 = matrix1[0].length;
-
-    const reversedMatrix = [];
-    for (let i = 0; i < numRows1; i += 1) {
-      reversedMatrix.push([]);
-      for (let j = numCols1 - 1; j >= 0; j -= 1) {
-        reversedMatrix[i].push(matrix1[i][j]);
-      }
-    }
-
-    return reversedMatrix;
-  }
-
-  reverseColumns(transposedMatrix);
+  return matrix1;
 }
 
 /**
@@ -401,7 +388,30 @@ function rotateMatrix(matrix) {
  *  [2, 9, 5, 9]    => [2, 5, 9, 9]
  *  [-2, 9, 5, -3]  => [-3, -2, 5, 9]
  */
-function sortByAsc(/* arr */) {}
+function sortByAsc(arr) {
+  function swap(arr1, i, j) {
+    const arrayCopy = arr1;
+    const temp = arrayCopy[i];
+    arrayCopy[i] = arrayCopy[j];
+    arrayCopy[j] = temp;
+  }
+
+  const n = arr.length;
+
+  for (let i = 0; i < n - 1; i += 1) {
+    let minIndex = i;
+    for (let j = i + 1; j < n; j += 1) {
+      if (arr[j] < arr[minIndex]) {
+        minIndex = j;
+      }
+    }
+    if (minIndex !== i) {
+      swap(arr, i, minIndex);
+    }
+  }
+
+  return arr;
+}
 
 /**
  * Shuffles characters in a string so that the characters with an odd index are moved to the end of the string at each iteration.
@@ -420,8 +430,25 @@ function sortByAsc(/* arr */) {}
  *  '012345', 3 => '024135' => '043215' => '031425'
  *  'qwerty', 3 => 'qetwry' => 'qtrewy' => 'qrwtey'
  */
-function shuffleChar(/* str, iterations */) {
-  throw new Error('Not implemented');
+function shuffleChar(str, iterations) {
+  let result = str;
+
+  for (let i = 0; i < iterations; i += 1) {
+    let newStr = '';
+    let oddChars = '';
+
+    for (let j = 0; j < result.length; j += 1) {
+      if (j % 2 === 0) {
+        newStr += result[j];
+      } else {
+        oddChars += result[j];
+      }
+    }
+
+    result = newStr + oddChars;
+  }
+
+  return result;
 }
 
 /**
@@ -441,8 +468,29 @@ function shuffleChar(/* str, iterations */) {
  * @param {number} number The source number
  * @returns {number} The nearest larger number, or original number if none exists.
  */
-function getNearestBigger(/* number */) {
-  throw new Error('Not implemented');
+function getNearestBigger(number) {
+  const digits = Array.from(String(number), Number);
+
+  let i = digits.length - 1;
+  while (i > 0 && digits[i] <= digits[i - 1]) {
+    i -= 1;
+  }
+
+  if (i === 0) {
+    return number;
+  }
+
+  let j = digits.length - 1;
+  while (digits[j] <= digits[i - 1]) {
+    j -= 1;
+  }
+
+  [digits[i - 1], digits[j]] = [digits[j], digits[i - 1]];
+
+  const temp = digits.splice(i);
+  temp.sort((a, b) => a - b);
+  const result = parseInt([...digits, ...temp].join(''), 10);
+  return result;
 }
 
 module.exports = {
